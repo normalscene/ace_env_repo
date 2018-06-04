@@ -1,0 +1,153 @@
+#. ace_functions
+#
+#
+#
+########################################################################################
+# ACE Helper functions to manage different versions and compilations.
+########################################################################################
+#
+custom_path_3up()       # Show path till only 3 levels back. 
+{ 
+  echo $(pwd)|rev|cut -f1,2,3 -d'/'|rev ; 
+}
+########################################################################################
+get_ace_lib_version()   # Get the ACE version of a particular binary and display it.
+{
+  #ace_lib_ver=$($(which ldd) $1|grep 'ACE.so.6.4.'|sed 's@^.*ACE.so.6.4.\(.\).*$@\1@g') 
+  echo "$(ldd $1|grep 'ACE.so.6.4.'|sed 's@^.*ACE.so.6.4.\(.\).*$@\1@g')"
+}
+########################################################################################
+get_gcc_version()       # Get current gcc version in effect and display it.
+{
+  echo $(g++ -v 2>&1|tail -1|sed 's/^gcc version \(.\).*$/\1/g')
+}
+########################################################################################
+get_ace_root()          # Check ACE version in effect and display it.
+{
+  echo $ACE_ROOT
+}
+########################################################################################
+achk()                  # Check ACE version in effect and display it.
+{
+  echo "ACE_ROOT:         [$ACE_ROOT]"
+  echo "LD_LIBRARY_PATH:  [$LD_LIBRARY_PATH]"
+}
+########################################################################################
+get_ace_version()       # Get current gcc version in effect and display it.
+{
+  echo $(achk|grep LD_LIB|sed 's@^.*6.4.\(.\).*$@\1@g')
+}
+########################################################################################
+set_ace_default_env()   # set default ace env variables.
+{
+  export LD_LIBRARY_PATH=''
+  export ACE_ROOT=''
+
+  [[ $(get_gcc_version) -eq 7 ]] &&  \
+    export LD_LIBRARY_PATH='/opt/rh/devtoolset-7/root/usr/lib64:/opt/rh/devtoolset-7/root/usr/lib:'
+
+  export LD_LIBRARY_PATH="/home/gaurav/ace-stuff/ace_root_6.4.6/ACE_wrappers/lib:$LD_LIBRARY_PATH:"
+  export ACE_ROOT=/home/gaurav/ace-stuff/ace_root_6.4.6/ACE_wrappers 
+  export ace=$ACE_ROOT/ace
+}
+########################################################################################
+ace_root_export()       # export 'ace' as the current $ACE_ROOT
+{
+  export ace=$ACE_ROOT/ace
+}
+########################################################################################
+get_current_ace_version()
+{
+  current_version=$(echo $ace|sed 's@^.*6.4.\(.\).*$@\1@g')
+  [[ -z $current_version ]] && echo "ACE_ROOT is NULL! Exiting" && return 1
+  echo $current_version
+}
+########################################################################################
+acev()                  # Set the ACE version to either 6.4.6 or 6.4.7 or 6.4.8(c++11) 
+{
+  [[ -z $1 ]] && echo "Need an argument. Exiting!" && return 1
+
+  base="$gahome/ace-stuff/ace_root_6.4"
+
+  set_ace_root()
+  {
+     [[ -z $1 ]] && return 1
+     export ACE_ROOT=''
+     val=$1
+     export ACE_ROOT="${base}.${val}/ACE_wrappers"
+     ace_root_export
+  }
+
+  set_ace_env_vals()
+  {
+    val=$1
+
+    export ACE_ROOT=''
+    export LD_LIBRARY_PATH='' 
+
+    # if gcc is 7, then include its libs in LD_LIB path.
+    [[ $(get_gcc_version) -eq 7 ]] &&  \
+      export LD_LIBRARY_PATH='/opt/rh/devtoolset-7/root/usr/lib64:/opt/rh/devtoolset-7/root/usr/lib:'
+
+    if [[ ! $val -eq 8 ]] 
+    then
+         export ACE_ROOT="${base}.${val}/ACE_wrappers"
+         export LD_LIBRARY_PATH="$ACE_ROOT/lib:$LD_LIBRARY_PATH"
+         ace_root_export
+        
+    fi
+    if [[ $val -eq 8 ]] 
+    then
+         export ACE_ROOT="${base}.${val}_c++11/ACE_wrappers"
+         export LD_LIBRARY_PATH="$ACE_ROOT/lib:$LD_LIBRARY_PATH"
+         ace_root_export
+    fi
+  }
+
+  case $1 in 
+
+           6)    set_ace_env_vals 6
+                 ;;
+     
+           7)    set_ace_env_vals 7
+                 ;;
+     
+           8)    set_ace_env_vals 8
+                 ;;
+     
+      [^678])    echo "Invalid value. Only digits 6,7,8 allowed!"
+                 ;;
+  esac
+  echo "ACE Version is: $(get_ace_version)"
+  return 1
+}
+########################################################################################
+run ()                  # Run the ace binary irrespective of its version.     
+{
+  latest_binary="$(file *|grep ELF|cut -f1 -d:|tail -1)"
+  [[ -z $latest_binary ]] && return 1
+
+  ace_lib_ver=$(get_ace_lib_version $latest_binary)
+  current_ace_version=$(get_current_ace_version)
+ 
+  # set ace version to the bin's version temporarily. 
+  acev $ace_lib_ver 1>/dev/null 2>&1
+
+  ./$latest_binary 2>&1 | sed 's@^\(.*\)in file .*\/\([^\/]*\.\(h\|cpp\).*\)$@\1\2@g'
+
+  # reset the version to what it was before
+  acev $current_ace_version 1>/dev/null 2>&1
+
+  # display the ace version of the bin
+  echo ; echo "[$latest_binary] ACE 6.4.$ace_lib_ver" ; echo 
+}
+########################################################################################
+mkk()                   # Make the all GNUfiles in the directory. 
+{ 
+  ls GNU*${1}* 2>/dev/null|while read g
+  do
+    [[ -e $g ]] && acmk $g 
+  done
+}
+########################################################################################
+# End.

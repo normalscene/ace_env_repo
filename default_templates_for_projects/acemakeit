@@ -1,0 +1,36 @@
+#!/bin/bash
+
+
+# gets makefile from prompt or exits immediately.
+# Extracts "executable" from makefile, if no BIN found - it exits immediately.
+
+dir=$(pwd)
+mkfile="$1"
+
+[[ -z $mkfile ]] && echo "No make file provided, exiting !!" && exit 1 ;
+[[ ! -e $mkfile || ! -s $mkfile ]] && echo "** $mkfile is either of zero size or doesn't exist !!, exiting !!" && exit 1 ;
+
+echo "Current Directory is: [$dir]"  
+
+executable=$(cat ${mkfile}|grep "^BIN_UNCH"|cut -f2 -d"="|tr -d " ")
+[[ ! -z $executable ]] && echo "Will make executable: [$executable]"
+[[ -z $executable ]] && echo "No BIN found in $mkfile, exiting !!" && exit 1 ;
+
+#cd $dir 
+#mv $executable ${executable}_prev_${stamp} 2>/dev/null
+#stamp=$(date +"%d_%m_%y_"%T|sed 's/:/_/g')
+
+	gmake -f ${mkfile} 1>/dev/null
+
+if [[ $? -eq 0 ]]
+then
+    echo
+    rm -rf .obj && echo "[.obj] directory deleted!"
+    rm .depend* && echo "[.depend] file deleted!"
+    echo;echo;echo "========================== !! Bin generated !! =========================="  
+    ls -lrtha $dir/$executable
+    echo "===========================[$(date)]=============================";echo;echo
+ else
+    echo "failed!"
+ fi
+
