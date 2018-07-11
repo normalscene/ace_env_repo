@@ -5,11 +5,19 @@ export study=$gahome/study
 export aceprac=$study/ace/practice
 export bace=$gahome/ace-stuff
 export ace_manage=$study/ace
-export _dfltacecpp=$ace_manage/default_templates_for_projects/default_ace_source_template_with_ACE_NTRACE_0.cpp
+export _dfltacecpp=${ace_manage}/default_templates_for_projects/default_ace_source_template_with_ACE_NTRACE_0.cpp
+export ace_dflt_templt_dir=${bace}/ace_env_repo/default_templates_for_projects
+export ace_dflt_proj_template=${ace_dflt_templt_dir}/project.mpc
 
 # need to have ace_aliases first!!
 source $bace/ace_aliases
 source $bace/ace_functions
+
+# source vars after ace_functions.
+export aex=${ACE_ROOT}/examples
+export apg=$aex/APG
+export atst=$aceprac/test_dir
+
 
 #######################################
 # Default ace root 6
@@ -23,3 +31,5 @@ gen_ace_ps1()
   echo "mypath is $my_path"
   export PS1="GCC:\[\e[38;5;14m\]\$(get_gcc_version)\[\e[m\]:ACE:\[\e[38;5;201m\]\$(get_ace_version)\[\e[m\]:\[\e[38;5;15m\]Host\[\e[m\]\[\e[38;5;196m\]@\[\e[m\]\[\e[38;5;15m\]User\[\e[m\]\[\e[38;5;196m\]:\[\e[m\]\[\e[38;5;6m\]\$p_3up\[\e[m\]\[\e[38;5;15m\]>\[\e[m\]\n\[\e[38;5;46m\]$:\[\e[m\]  "
 }
+
+[[  $(get_gcc_version) -ne 7 ]] && scl enable devtoolset-7 bash

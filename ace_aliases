@@ -1,9 +1,13 @@
+alias mkr='mkk;run'
 alias pathfilt="sed 's@^\(.*\)in file .*\/\([^\/]*\.\(h\|cpp\).*\)$@\1\2@g'"
 alias vaf='vim $bace/ace_functions'
 alias vap='vim $bace/ace_profile'
 alias vaal='vim $bace/ace_aliases'
+alias laf='source $bace/ace_functions;source $bace/ace_aliases'
+alias lap='source $bace/ace_aliases'
 alias bace='cd $gahome/ace-stuff; ls -lrth'
-alias atst="cd $aceprac/APG/Logging/test;ls"
+alias atst="cd $aceprac/test_dir;ls -lrth"
 alias aceprac="ace >/dev/null ; cd practice/APG/ ; ls "
 alias ace='cd $gahome/study/ace/ ; ls -lrth'
 alias lace='source $bace/ace_profile ; acev 6 >/dev/null ; gen_ace_ps1' 
+alias pjj='_ace_proj_gen'
