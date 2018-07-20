@@ -181,14 +181,14 @@ run ()                  # Run the ace binary irrespective of its version.
   acev $ace_lib_ver 1>/dev/null 2>&1
 
   # output header
-  echo "@[$latest_binary] ACE 6.4.$ace_lib_ver" 
-  
-  #./$latest_binary 2>&1 | perl -pe 's@^(.+? calling .+?file ).+?\/([^\/]+?\.(?:h|cpp|inl)).( on line \d+)$@$1$2$3@g'
-  #
-  ./$latest_binary $my_args 2>&1 | perl -pe 's@^(.+? calling .+?file ).+?\/([^\/]+?\.(?:h|cpp|inl)).( on line \d+)$@$1$2$3@g'|while read line
+  echo "RUNNING @[$latest_binary] with ACE 6.4.$ace_lib_ver" 
+ 
+  # unset the IFS to not lose the spaces. 
+  ./$latest_binary $my_args 2>&1 | while IFS= read line
   do
-      ((count++))
-      echo "[$count]  $line"
+       ((count++))
+       newline="$(echo "$line"|perl -pe 's@^(.+? calling .+?file ).+?\/([^\/]+?\.(?:h|cpp|inl)).( on line \d+)$@$1$2$3@g')"
+       echo "[$count]  $newline"
   done
 
   # reset the version to what it was before
