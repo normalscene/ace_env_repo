@@ -18,8 +18,12 @@ FILES = \
    CPPFILES
 
 
-LIBPATHS := . "../../../lib"
-
+# edit this to add yoru lib paths
+# example: LIBPATHS := . "$(ACE_ROOT)/lib" "$(mylibs)"
+#LIBPATHS := . "../../../lib"
+#
+# Setting default compilation standard to c++17
+CPPFLAGS = -frecord-gcc-switches -std=c++17
 #----------------------------------------------------------------------------
 #       Include macros and targets
 #----------------------------------------------------------------------------

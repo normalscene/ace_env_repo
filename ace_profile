@@ -1,7 +1,8 @@
 #. ace_profile
 
-export gahome=/home/gaurav
+[[ -z $gahome ]] && export gahome=/home/compuser
 export study=$gahome/study
+export acestudy=$study/ace/topics
 export aceprac=$study/ace/practice
 export bace=$gahome/ace-stuff
 export ace_manage=$study/ace
@@ -18,9 +19,10 @@ export aex=${ACE_ROOT}/examples
 export apg=$aex/APG
 export atst=$aceprac/test_dir
 
+export PATH=/home/compuser/mystuff/ace-stuff/ace_env_repo/bins:$PATH
 
 #######################################
-# Default ace root 6
+# Default ace root 6.5
 #######################################
 set_ace_default_env
 #.
@@ -28,8 +30,8 @@ set_ace_default_env
 gen_ace_ps1()
 {
   my_path=$p_3up
-  echo "mypath is $my_path"
   export PS1="GCC:\[\e[38;5;14m\]\$(get_gcc_version)\[\e[m\]:ACE:\[\e[38;5;201m\]\$(get_ace_version)\[\e[m\]:\[\e[38;5;15m\]Host\[\e[m\]\[\e[38;5;196m\]@\[\e[m\]\[\e[38;5;15m\]User\[\e[m\]\[\e[38;5;196m\]:\[\e[m\]\[\e[38;5;6m\]\$p_3up\[\e[m\]\[\e[38;5;15m\]>\[\e[m\]\n\[\e[38;5;46m\]$:\[\e[m\]  "
 }
 
-[[  $(get_gcc_version) -ne 7 ]] && scl enable devtoolset-7 bash
+# now we are not going to gcc 7 by default.
+#[[  $(get_gcc_version) -ne 7 ]] && scl enable devtoolset-7 bash

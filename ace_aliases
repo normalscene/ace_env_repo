@@ -1,13 +1,34 @@
+# make
 alias mkr='mkk;run'
+
+# filter long paths in output file.
 alias pathfilt="sed 's@^\(.*\)in file .*\/\([^\/]*\.\(h\|cpp\).*\)$@\1\2@g'"
+
+# view
 alias vaf='vim $bace/ace_functions'
 alias vap='vim $bace/ace_profile'
 alias vaal='vim $bace/ace_aliases'
-alias laf='source $bace/ace_functions;source $bace/ace_aliases'
+
+# load
+alias lace='source $bace/ace_profile ; acev 6.5 >/dev/null ; gen_ace_ps1' 
+alias laa='source $bace/ace_functions;source $bace/ace_aliases'
 alias lap='source $bace/ace_aliases'
-alias bace='cd $gahome/ace-stuff; ls -lrth'
-alias atst="cd $aceprac/test_dir;ls -lrth"
+
+# directories
+#alias bace='cd $gahome/ace-stuff; ls -lrth'
+alias bace='cd $gahome/ace-stuff'
+#alias atst="cd $aceprac/test_dir;ls -lrth"
+#alias atmp='cd $ace
+alias atst='cd $aceprac/test_dir'
 alias aceprac="ace >/dev/null ; cd practice/APG/ ; ls "
-alias ace='cd $gahome/study/ace/ ; ls -lrth'
-alias lace='source $bace/ace_profile ; acev 6 >/dev/null ; gen_ace_ps1' 
+#alias ace='cd $gahome/study/ace/ ; ls -lrth'
+alias ace='cd $gahome/study/ace/'
+alias atopics='cd $study/ace/topics '
+
+# default project generation using
+# mpc.pl in $ACE_ROOT
 alias pjj='_ace_proj_gen'
+
+#make all ace elfs
+alias mkall='find |grep GNU|while read g ; do cd $(dirname $g) >/dev/null ;  acemakeit $(basename $g) && echo OK || echo FAIL ; cd - >/dev/null ; done'
+
