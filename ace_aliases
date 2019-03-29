@@ -14,6 +14,9 @@ alias lace='source $bace/ace_profile ; acev 6.5 >/dev/null ; gen_ace_ps1'
 alias laa='source $bace/ace_functions;source $bace/ace_aliases'
 alias lap='source $bace/ace_aliases'
 
+# utils
+alias alf='ace-log-formats 2>&1 '
+
 # directories
 #alias bace='cd $gahome/ace-stuff; ls -lrth'
 alias bace='cd $gahome/ace-stuff'
@@ -24,6 +27,9 @@ alias aceprac="ace >/dev/null ; cd practice/APG/ ; ls "
 #alias ace='cd $gahome/study/ace/ ; ls -lrth'
 alias ace='cd $gahome/study/ace/'
 alias atopics='cd $study/ace/topics '
+alias atops='cd $study/ace/topics '
+alias apue='cd $study/ace/topics/apue_with_ace '
+alias aprac='cd $atopics/../practice '
 
 # default project generation using
 # mpc.pl in $ACE_ROOT
