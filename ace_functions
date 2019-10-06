@@ -25,20 +25,92 @@ _ace_proj_gen()                # generate a default mpc file to make project.
 
   if [[ ! -z $1 ]]
   then
+       dt=$(date +%Y%m%d)
        cp $ace_dflt_proj_template . 
        mv project.mpc proj_${1}.mpc
-       sed -i "s@Main@${1}@g"                 proj_${1}.mpc
-       sed -i "s@(project)@(proj_${1})@g"     proj_${1}.mpc
-       sed -i "s@main.cpp@main_${1}.cpp@g"    proj_${1}.mpc
+       sed -i "s@projectName@${1}@g"              proj_${1}.mpc
+       sed -i "s@ = exename@ = ${1}@g"            proj_${1}.mpc
+       sed -i "s@Main@${1}@g"                     proj_${1}.mpc
+       sed -i "s@(project)@ (proj_${1})@g"        proj_${1}.mpc
+       sed -i "s@main@main_${dt}_${1}.cpp@g"      proj_${1}.mpc
        $ACE_ROOT/bin/mpc.pl $(pwd)/proj_${1}.mpc -type gnuace
        sed -i '14iCPPFLAGS = -frecord-gcc-switches -std=c++17' GNU*
-       touch main_${1}.cpp ; vim main_${1}.cpp
+       touch main_${dt}_${1}.cpp ; vim main_${dt}_${1}.cpp
   else
        cp $ace_dflt_proj_template . 
        echo ; $ACE_ROOT/bin/mpc.pl $(pwd)/project.mpc -type gnuace ; echo 
        sed -i '14iCPPFLAGS = -frecord-gcc-switches -std=c++17' GNUmakefile.project
        touch main.cpp ; vim main.cpp
   fi
+}
+
+# 20190808
+_ace_proj_gen_2()
+{
+
+  time_stamp="$(echo $(date +"%Y%m%d%T")|tr -d ':')"
+
+  # default main cpp content
+  echo '// -*- C++ -*-
+
+#define ACE_NTRACE 1
+
+#include "ace/Log_Msg.h"
+
+
+#if defined (LOG_FORMAT)
+#undef (LOG_FORMAT)
+#endif /* if defined (LOG_FORMAT) */
+#define LOG_FORMAT ACE_TEXT ("(%I%T %M %P %t): ")
+
+
+#if defined  (Log)
+#undef (Log)
+#endif /* if defined (Log) */
+#define Log(FMT, ...)  ACE_DEBUG ((LM_DEBUG, \
+            LOG_FORMAT FMT, ##__VA_ARGS__)); 
+
+
+int
+ACE_TMAIN (int argc, const ACE_TCHAR* argv[])
+{
+  Log ("Main starts\n");
+
+  ACE_UNUSED_ARG (argc);
+  ACE_UNUSED_ARG (argv);
+
+  
+  Log ("Main ends\n");
+  ACE_RETURN (0);
+}
+' > __temp_main_.cpp
+
+  #1. if empty project name
+  # 
+
+    # create a default main file
+    default_main_file=main_0_${time_stamp}.cpp
+    touch $default_main_file
+    mv __temp_main_.cpp $default_main_file
+
+    # create a default mpc project file
+    echo "// -*- MPC -*-
+
+project ($time_stamp Default Project) : aceexe {
+  exename = bin
+  Header_Files {
+
+  }
+  Source_Files {
+    $default_main_file
+  }
+}
+
+" >> default_project.mpc 
+
+  mpc.pl -type gnuace default_project.mpc
+  gmake -f GNU*${time_stamp}*
+  ls -lrth
 }
 #
 #########################################################################################
@@ -92,7 +164,7 @@ set_ace_default_env()   # set default ace env variables.
   [[ $(get_gcc_version) -eq 7 ]] &&  \
     export LD_LIBRARY_PATH='/opt/rh/devtoolset-7/root/usr/lib64:/opt/rh/devtoolset-7/root/usr/lib:'
 
-  export LD_LIBRARY_PATH="/home/compuser/mystuff/ace-stuff/ace_root/6.5/ACE_wrappers/lib:$LD_LIBRARY_PATH"
+  export LD_LIBRARY_PATH="/home/compuser/mystuff/ace-stuff/ace_root/6.5.6/ACE_wrappers/lib:$LD_LIBRARY_PATH"
   export ACE_ROOT=/home/compuser/mystuff/ace-stuff/ace_root/6.5/ACE_wrappers 
   export ace=$ACE_ROOT/ace
   export PATH=$ACE_ROOT/bin:$PATH
